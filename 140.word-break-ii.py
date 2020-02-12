@@ -65,6 +65,8 @@
 #
 
 # @lc code=start
+from typing import List
+
 class Solution:
     def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
         """
@@ -90,8 +92,40 @@ class Solution:
            |   |
            0   0
         """
+        sz = len(s)
+        dp = [False] * (sz+1)
+        dp[0] = True
+        T = {} # Tree
+        for i in range(sz):
+            for word in wordDict:
+                wsz = len(word)
+                if wsz <= i+1 and dp[i+1-wsz] and s[:i+1].endswith(word):
+                    dp[i+1] = True
+                    if i-wsz in T:
+                        T[i-wsz].append(i)
+                    else:
+                        T[i-wsz] = [i]
+        #print(T)
+        #print(dp)
+        ans = []
+        if not dp[-1]: 
+            return ans
+        def inorder(node, prefix=""):
+            for child in T[node]:
+                if child == sz-1:
+                    ans.append(prefix+s[node+1:child+1])
+                elif child in T:
+                        inorder(child, prefix+s[node+1:child+1]+" ")
+
+        inorder(-1)
+        #print(ans)
+        return ans
 
 
+
+#Solution().wordBreak("catsanddog", ["cat", "cats", "and", "sand", "dog"])
+#Solution().wordBreak("catsandog", ["cats","dog","sand","and","cat"])
+#Solution().wordBreak("abcd", ["a","abc","b","cd"])
         
 # @lc code=end
 
